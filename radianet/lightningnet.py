@@ -91,13 +91,12 @@ if __name__ == '__main__':
         )
 
         n_sample = 5
-
         datasets = SampleDataset3D(n_sample = n_sample)
         datasets = datasets.get_dataset()
 
         lightning_model = LightningNet(trial, config, SimpleCNN, datasets)
-
         trainer.fit(lightning_model)
+
         return metrics_callback.metrics[-1]["val_loss"]
 
     study = optuna.create_study()
