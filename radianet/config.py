@@ -4,4 +4,7 @@ class Config():
     N_TRIALS = 5
     EPOCHS = 10
     N_CLASSES = 1
-    MODEL_DIR = './checkpoints/test'
+    NAME = 'test'
+
+    MODEL_DIR = './checkpoints/' + NAME
+    DB_NAME = 'sqlite:///' + NAME + '.db'

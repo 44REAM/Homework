@@ -9,7 +9,7 @@ import numpy as np
 
 class LightningNet(pl.LightningModule):
     def __init__(self, trial, config, model, datasets):
-        super(LightningNet, self).__init__()
+        super().__init__()
         self.model = model(trial, config)
         self.hparams = self._get_hparams(trial)
         self.config = config
@@ -74,7 +74,7 @@ class LightningNet(pl.LightningModule):
 if __name__ == '__main__':
     from .datasets import SampleDataset3D, Dataset
     from .config import Config
-    from .models import SimpleCNN
+    from .models import Simple3DCNN
     from .callbacks import MetricsCallback
 
     config = Config
@@ -94,7 +94,7 @@ if __name__ == '__main__':
         datasets = SampleDataset3D(n_sample = n_sample)
         datasets = datasets.get_dataset()
 
-        lightning_model = LightningNet(trial, config, SimpleCNN, datasets)
+        lightning_model = LightningNet(trial, config, Simple3DCNN, datasets)
         trainer.fit(lightning_model)
 
         return metrics_callback.metrics[-1]["val_loss"]

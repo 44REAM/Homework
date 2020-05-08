@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.functional as F
 import optuna
 
-class SimpleCNN(nn.Module):
+class Simple3DCNN(nn.Module):
 
     def __init__(self, trial, config):
         super().__init__()
@@ -120,7 +120,7 @@ if __name__ == "__main__":
 
     def objective(trial):
 
-        model = SimpleCNN(trial, config)
+        model = Simple3DCNN(trial, config)
         model.calculate_linear_input(test_data)
         
         print(model(test_data))
