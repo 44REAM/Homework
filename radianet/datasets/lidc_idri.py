@@ -1,6 +1,5 @@
 import pandas as pd
 import numpy as np
-from .utils import split_data
 
 class LIDCDataset():
     def __init__(self, n_sample = 100, channels = 1, width = 64, height = 64, deep = 12):
@@ -27,10 +26,9 @@ def get_lidc_label(path, label_type = None):
         df[df.Diagnosis == 2] = 0
         df[df.Diagnosis == 3] = 1
         
-    ID = df.id.to_numpy()
+    partition = df.id.to_numpy()
     label = df.Diagnosis.to_numpy()
 
-    partition, label = split_data(ID, label)
     return partition, label
 
 

@@ -1,5 +1,7 @@
 import torch
 import torch.nn as nn
+import torch.functional as F
+import optuna
 
 class Simple3DCNN(nn.Module):
 
@@ -16,6 +18,30 @@ class Simple3DCNN(nn.Module):
         linear_input = x.shape[1]
 
         self.feedforward_block = self.get_feedforward_block( linear_input)
+
+    def bottleneck_block(self):
+        modules = []
+
+        modules.append(nn.Conv2d(in_channels, out_channels, (1,1)))
+
+        if batchnorm == True:
+            modules.append(nn.BatchNorm2d(num_features=out_channels))
+
+        modules.append(nn.ReLU6())
+
+        if batchnorm == True:
+            modules.append(nn.BatchNorm2d(num_features=out_channels))
+
+        modules.append(nn.ReLU6())
+
+        modules.append(nn.Conv2d(in_channels, out_channels, (1,1)))
+
+        if batchnorm == True:
+            modules.append(nn.BatchNorm2d(num_features=out_channels))
+
+        conv_block = nn.Sequential(*modules)
+
+        return conv_block
 
     @staticmethod
     def _get_hparams( trial):
@@ -101,8 +127,6 @@ class Simple3DCNN(nn.Module):
 
 
 if __name__ == "__main__":
-    import optuna
-
     from ..datasets import SampleDataset3D, Transforms
     from .. import config
 

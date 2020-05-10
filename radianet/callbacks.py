@@ -1,7 +1,8 @@
 from pytorch_lightning import Callback
 
+
 class MetricsCallback(Callback):
-    
+
     def __init__(self):
         super().__init__()
         self.metrics = []
