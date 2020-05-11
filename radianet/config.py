@@ -7,6 +7,7 @@ class Config():
     BORDER_MODE = 0
     NAME = 'test'
     IMAGE_SIZE = 240
+    LIDC_PATH = "D:\\GoogleDrive\\dataset\\radiology\\TCIA_LIDC-IDRI\\preprocess\\"
     EFFICIENTNET_B0_LAYER = 7
 
     MODEL_DIR = './checkpoints/' + NAME

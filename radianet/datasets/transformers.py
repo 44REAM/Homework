@@ -43,7 +43,8 @@ if __name__ == '__main__':
 
     import numpy as np
     import cv2
-    from matplotlib import pyplot as plt
+
+    from .utils import transform_and_show
 
     def download_image(url):
         data = urlopen(url).read()
@@ -55,11 +56,6 @@ if __name__ == '__main__':
     image = download_image(
         'https://d177hi9zlsijyy.cloudfront.net/wp-content/uploads/sites/2/2018/05/11202041/180511105900-atlas-boston-dynamics-robot-running-super-tease.jpg')
 
-    def transform_and_show(transform, image):
-        image = transform(image)
-        plt.figure(figsize=(10, 10))
-        plt.imshow(image)
-        plt.show()
-
+    print(image.shape)
     transform = Transforms(basic=True)
     transform_and_show(transform, image)

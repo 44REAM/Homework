@@ -1,38 +1,58 @@
 import pandas as pd
 import numpy as np
 
-class LIDCDataset():
-    def __init__(self, n_sample = 100, channels = 1, width = 64, height = 64, deep = 12):
-        self.data = np.random.randn(n_sample, channels, width, height, deep).astype(np.float32)
-        self.label = np.array([np.random.randint(0, 2) for x in range(n_sample) ]).astype(np.float32)
+from torch.utils.data import Dataset
 
+
+
+class LIDCDataset(Dataset):
+
+    def __init__(self, transforms, path):
+        self.transforms = transforms
+        self.path = path
+        self.partition, self.labels = self.get_lidc_label()
+
+    def get_lidc_label(self):
+        # path to csv file
+        path = self.path + 'df.csv'
+        df = pd.read_csv(path)
+
+        partition = df.nodule_name.to_numpy()
+        label = df.nodule_label.to_numpy()
+
+        return partition, label
 
     def get_data(self, idx):
-        idx = int(idx)
-        return self.data[idx]
 
-def get_lidc_label(path, label_type = None):
-    # path to csv file
-    df = pd.read_csv(path)
+        path = self.path + str(idx) + '.npy'
+        data = np.load(path) 
+        return data
 
-    df = df[df.Diagnosis != 0]
-    
-    if label_type == 'malignant':
+    def __len__(self):
+        return len(self.partition)
 
-        df[df.Diagnosis == 1] = 0
-        df[df.Diagnosis != 0] = 1
-    elif label_type == 'source':
-        df = df[df.Diagnosis != 1]
-        df[df.Diagnosis == 2] = 0
-        df[df.Diagnosis == 3] = 1
-        
-    partition = df.id.to_numpy()
-    label = df.Diagnosis.to_numpy()
+    def __getitem__(self, index):
+        idx = self.partition[index]
 
-    return partition, label
+        X = self.get_data(idx)
+
+        X = self.transforms(X)
+
+        y = self.labels[index]
+
+        return X, y
+
+
 
 
 if __name__ == "__main__":
-    path = "D:\\GoogleDrive\\dataset\\radiology\\TCIA_LIDC-IDRI\\tcia-diagnosis-data-2012-04-20.csv"
-    partition, label = get_lidc_label(path)
-    print(label)
+    from ..config import Config
+    from .transformers import Transforms
+    from .utils import show
+
+    transforms = Transforms()
+    datasets = LIDCDataset(transforms, Config.LIDC_PATH)
+    print(datasets.partition)
+    print(datasets.labels)
+    img, label = datasets[0]
+    show(img)
