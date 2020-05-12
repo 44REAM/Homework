@@ -69,11 +69,26 @@ class LightningNet(pl.LightningModule):
     def configure_optimizers(self):
         return Adam(self.model.parameters(), lr=self.hparams['lr'])
 
+    def test_step(self, batch, _):
+        data, target = batch
+        output = self.forward(data)
+        output = output.reshape(-1)
+
+        acc = binary_accuracy(output, target)
+
+        return {"test_acc": acc}
+
+    def test_epoch_end(self, outputs):
+        test_acc_mean = torch.stack([x['test_acc'] for x in outputs]).mean()
+        return {'test_acc': test_acc_mean}
     def train_dataloader(self):
         return self.train_dataset
 
     def val_dataloader(self):
         return self.val_dataset
+
+    def test_dataloader(self):
+        return self.test_dataset
 
 
 if __name__ == '__main__':
@@ -103,14 +118,14 @@ if __name__ == '__main__':
             gpus=[0] if torch.cuda.is_available() else None
         )
 
-        n_sample = 5
+        n_sample = 20
         transforms = Transforms()
         datasets = SampleDataset2D(transforms, n_sample=n_sample)
         dataloader = get_dataloader(datasets, config.BATCHSIZE)
 
         lightning_model = LightningNet(trial, config, MyEfficientNet, dataloader, loss)
         trainer.fit(lightning_model)
-
+        trainer.test()
         return metrics_callback.metrics[-1]["val_loss"]
 
     study = optuna.create_study()
