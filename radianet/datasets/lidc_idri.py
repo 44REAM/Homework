@@ -29,6 +29,16 @@ class LIDCDataset(Dataset):
         data = np.load(path) 
         return data
 
+    def count_labels(self):
+        neg = 0
+        pos = 0
+        for label in self.labels:
+            if label == 0:
+                neg +=1
+            elif label == 1:
+                pos += 1
+        print("benign", neg)
+        print("malignant",pos)
     def __len__(self):
         return len(self.partition)
 
@@ -55,9 +65,8 @@ if __name__ == "__main__":
 
     transforms = Transforms()
     datasets = LIDCDataset(transforms, Config.LIDC_PATH)
-    print(datasets.partition)
-    print(datasets.labels)
+    datasets.count_labels()
     img, label = datasets[0]
     get_dataloader(datasets, Config.BATCHSIZE)
-    show(img)
+
 

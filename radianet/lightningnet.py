@@ -3,17 +3,18 @@
 
 import pytorch_lightning as pl
 import torch
-import torch.nn.functional as F
+import torch.nn as nn
 from torch.optim import Adam
 import optuna
 
 from .metrics import binary_accuracy
 
 class LightningNet(pl.LightningModule):
-    def __init__(self, trial, config, model, dataloader):
+    def __init__(self, trial, config, model, dataloader, loss):
         super().__init__()
         self.model = model(trial, config)
         self.config = config
+        self.loss = loss
 
         self.dataloader = dataloader
         self.hparams = self._get_hparams(trial)
@@ -46,7 +47,7 @@ class LightningNet(pl.LightningModule):
         data, target = batch
         output = self.forward(data)
         output = output.reshape(-1)
-        return {"loss": F.binary_cross_entropy(output, target)}
+        return {"loss": self.loss(output, target)}
 
     def validation_step(self, batch, _):
         data, target = batch
@@ -90,6 +91,7 @@ if __name__ == '__main__':
 
     def objective(trial):
 
+        loss = nn.BCELoss()
         metrics_callback = MetricsCallback()
 
         #These callbacks DO NOT replace the explicit callbacks (loggers, EarlyStopping or ModelCheckpoint)
@@ -105,7 +107,7 @@ if __name__ == '__main__':
         datasets = SampleDataset2D(transforms, n_sample=n_sample)
         dataloader = get_dataloader(datasets, config.BATCHSIZE)
 
-        lightning_model = LightningNet(trial, config, MyEfficientNet, dataloader)
+        lightning_model = LightningNet(trial, config, MyEfficientNet, dataloader, loss)
         trainer.fit(lightning_model)
 
         return metrics_callback.metrics[-1]["val_loss"]
