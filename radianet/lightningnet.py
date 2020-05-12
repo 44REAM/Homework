@@ -7,6 +7,7 @@ import torch.nn.functional as F
 from torch.optim import Adam
 import optuna
 
+from .metrics import binary_accuracy
 
 class LightningNet(pl.LightningModule):
     def __init__(self, trial, config, model, dataloader):
@@ -44,7 +45,7 @@ class LightningNet(pl.LightningModule):
     def training_step(self, batch, _):
         data, target = batch
         output = self.forward(data)
-
+        output = output.reshape(-1)
         return {"loss": F.binary_cross_entropy(output, target)}
 
     def validation_step(self, batch, _):
@@ -53,7 +54,9 @@ class LightningNet(pl.LightningModule):
         output = self.forward(data)
         output = output.reshape(-1)
 
-        return {"val_loss": F.binary_cross_entropy(output, target)}
+        acc = binary_accuracy(output, target)
+
+        return {"val_loss": acc}
 
     def validation_epoch_end(self, outputs):
         avg_loss = torch.stack([x['val_loss'] for x in outputs]).mean()
@@ -72,23 +75,29 @@ class LightningNet(pl.LightningModule):
 
 
 if __name__ == '__main__':
+
+    from pytorch_lightning.loggers import TestTubeLogger
+
     from .datasets import SampleDataset3D, Transforms, SampleDataset2D
     from .config import Config
     from .models import Simple3DCNN, MyEfficientNet
     from .callbacks import MetricsCallback
     from .utils import get_dataloader
 
+
     config = Config
+    logger = TestTubeLogger('tb_logs', name='my_model')
 
     def objective(trial):
 
         metrics_callback = MetricsCallback()
 
+        #These callbacks DO NOT replace the explicit callbacks (loggers, EarlyStopping or ModelCheckpoint)
         trainer = pl.Trainer(
-            logger=False,
+            logger=logger,
             max_epochs=config.EPOCHS,
             callbacks=[metrics_callback],
-            gpus=0 if torch.cuda.is_available() else None
+            gpus=[0] if torch.cuda.is_available() else None
         )
 
         n_sample = 5
