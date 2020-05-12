@@ -20,6 +20,7 @@ class LightningNet(pl.LightningModule):
         self.hparams = self._get_hparams(trial)
         self.train_dataset = self.dataloader['train']
         self.val_dataset = self.dataloader['val']
+        self.test_dataset = self.dataloader['test']
 
     def _get_hparams(self, trial):
         learning_rate = trial.suggest_loguniform('lr', self.config.MIN_LR, self.config.MAX_LR)

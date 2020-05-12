@@ -34,16 +34,19 @@ def split_dataloader(dataset, batch_size, validation_split=0.2,
 
 def get_dataloader(dataset, batch_size, validation_split=0.2,
                    shuffle_dataset=True, random_seed=42,
-                   method='split_dataloader'):
+                   method='split_dataloader', test_set = 'same'):
     if method == 'split_dataloader':
         train_loader, validation_loader = split_dataloader(
             dataset, batch_size,
             validation_split=validation_split,
             shuffle_dataset=shuffle_dataset, random_seed=random_seed
         )
+        if test_set == 'same':
+            test_loader = validation_loader
         dataloader = {
             'train': train_loader,
-            'val': validation_loader
+            'val': validation_loader,
+            'test': test_loader
         }
         return dataloader
     return None
