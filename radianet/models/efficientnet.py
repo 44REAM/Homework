@@ -40,7 +40,7 @@ class MyEfficientNet(nn.Module):
     def linear_block(self):
         block = nn.Sequential(
             nn.Linear(1000, self.config.N_CLASSES),
-            nn.Sigmoid()
+            
         )
         return block
 

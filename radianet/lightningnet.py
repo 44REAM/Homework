@@ -91,7 +91,7 @@ if __name__ == '__main__':
 
     def objective(trial):
 
-        loss = nn.BCELoss()
+        loss = nn.BCEWithLogitsLoss()
         metrics_callback = MetricsCallback()
 
         #These callbacks DO NOT replace the explicit callbacks (loggers, EarlyStopping or ModelCheckpoint)
