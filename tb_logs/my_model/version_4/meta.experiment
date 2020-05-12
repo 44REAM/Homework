@@ -1,1 +1,0 @@
-{"name": "my_model", "version": 4, "tags_path": "tb_logs\\my_model\\version_4/meta_tags.csv", "metrics_path": "tb_logs\\my_model\\version_4/metrics.csv", "autosave": false, "description": null, "created_at": "2020-05-12 10:42:43.680088", "exp_hash": "my_model_v4"}

@@ -86,7 +86,7 @@ if __name__ == '__main__':
 
 
     config = Config
-    logger = TestTubeLogger('tb_logs', name='my_model')
+    logger = TestTubeLogger('checkpoints', name='my_model')
 
     def objective(trial):
 
