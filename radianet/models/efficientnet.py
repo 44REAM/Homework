@@ -55,13 +55,12 @@ class MyEfficientNet(nn.Module):
         x = torch.flatten(x, start_dim=1)
         x = self.bottom_2(x)
         x = self.linear_block1(x)
-        print(x.shape)
-
 
         return x
 
 if __name__ == "__main__":
     import optuna
+    import numpy as np
 
     from ..datasets import SampleDataset2D, Transforms
     from .. import config
@@ -72,10 +71,11 @@ if __name__ == "__main__":
 
     config = config.Config
     transforms = Transforms()
-    datasets = SampleDataset2D(transforms, width=image_size, height=image_size, channels=3)
+    datasets = SampleDataset2D(transforms, width=240, height=240, channels=3)
+    print(datasets.data.shape)
 
     train_loader = torch.utils.data.DataLoader(
-            datasets.data,
+            np.swapaxes(datasets.data, 3, 1).astype(np.float32),
             batch_size= config.BATCHSIZE,
             shuffle=False,
         )

@@ -12,16 +12,15 @@ class LightningNet(pl.LightningModule):
     def __init__(self, trial, config, model, dataloader):
         super().__init__()
         self.model = model(trial, config)
-        self.hparams = self._get_hparams(trial)
         self.config = config
-        self.dataloader = dataloader
 
+        self.dataloader = dataloader
+        self.hparams = self._get_hparams(trial)
         self.train_dataset = self.dataloader['train']
         self.val_dataset = self.dataloader['val']
 
-    @staticmethod
-    def _get_hparams(trial):
-        learning_rate = trial.suggest_loguniform('lr', 1e-5, 1e-2)
+    def _get_hparams(self, trial):
+        learning_rate = trial.suggest_loguniform('lr', self.config.MIN_LR, self.config.MAX_LR)
         hparams = {
             'lr': learning_rate
         }
@@ -73,9 +72,9 @@ class LightningNet(pl.LightningModule):
 
 
 if __name__ == '__main__':
-    from .datasets import SampleDataset3D, Transforms
+    from .datasets import SampleDataset3D, Transforms, SampleDataset2D
     from .config import Config
-    from .models import Simple3DCNN
+    from .models import Simple3DCNN, MyEfficientNet
     from .callbacks import MetricsCallback
     from .utils import get_dataloader
 
@@ -93,11 +92,11 @@ if __name__ == '__main__':
         )
 
         n_sample = 5
-        transforms = Transforms
-        datasets = SampleDataset3D(transforms, n_sample=n_sample)
+        transforms = Transforms()
+        datasets = SampleDataset2D(transforms, n_sample=n_sample)
         dataloader = get_dataloader(datasets, config.BATCHSIZE)
 
-        lightning_model = LightningNet(trial, config, Simple3DCNN, dataloader)
+        lightning_model = LightningNet(trial, config, MyEfficientNet, dataloader)
         trainer.fit(lightning_model)
 
         return metrics_callback.metrics[-1]["val_loss"]
