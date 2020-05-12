@@ -1,5 +1,6 @@
 from efficientnet_pytorch import EfficientNet
 import torch.nn as nn
+import torch
 
 class MyEfficientNet(nn.Module):
     def __init__(self, trial, config, *args, **kwargs):
@@ -46,20 +47,20 @@ class MyEfficientNet(nn.Module):
     def forward(self, image):
 
         x = self.head(image)
-        print(x.shape)
+
         x = self.body_no_grad(x)
-        print(x.shape)
+
         x = self.body_grad(x)
         x = self.bottom_1(x)
         x = torch.flatten(x, start_dim=1)
         x = self.bottom_2(x)
         x = self.linear_block1(x)
+        print(x.shape)
 
 
         return x
 
 if __name__ == "__main__":
-    import torch
     import optuna
 
     from ..datasets import SampleDataset2D, Transforms

@@ -1,5 +1,6 @@
 # pylint: disable=redefined-outer-name
 
+import numpy as np
 from albumentations import (
     Flip,
     ElasticTransform,
@@ -34,7 +35,7 @@ class Transforms():
         for transform in self.transforms:
             image = transform(image=image)['image']
 
-        return image
+        return np.transpose(image, (2, 0, 1)).astype(np.float32)
 
 
 if __name__ == '__main__':

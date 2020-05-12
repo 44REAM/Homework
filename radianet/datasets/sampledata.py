@@ -33,10 +33,10 @@ class SampleDataset3D(Dataset):
 
 class SampleDataset2D(Dataset):
 
-    def __init__(self, transforms, n_sample=100, channels=1, width=64, height=64):
+    def __init__(self, transforms, n_sample=100, channels=3, width=224, height=244):
         np.random.seed(52)
         self.data = np.random.randn(
-            n_sample, channels, width, height).astype(np.float32)
+            n_sample, width, height, channels).astype(np.float32)
         self.labels = np.array([np.random.randint(0, 2)
                                 for x in range(n_sample)]).astype(np.float32)
         self.list_ids = np.array([i for i in range(n_sample)])

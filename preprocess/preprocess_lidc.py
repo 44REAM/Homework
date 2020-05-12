@@ -151,7 +151,7 @@ def visualize(image):
 
 
 def preprocess_image(image):
-    dim = (240, 240)
+    dim = (224, 224)
     image = cv2.resize(image, dim, interpolation=cv2.INTER_AREA)
     image = cv2.merge((image, image, image))
 

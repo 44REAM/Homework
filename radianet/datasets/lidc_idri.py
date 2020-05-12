@@ -11,6 +11,7 @@ class LIDCDataset(Dataset):
         self.transforms = transforms
         self.path = path
         self.partition, self.labels = self.get_lidc_label()
+        self.labels = self.labels.astype(np.float32)
 
     def get_lidc_label(self):
         # path to csv file
@@ -50,9 +51,13 @@ if __name__ == "__main__":
     from .transformers import Transforms
     from .utils import show
 
+    from ..utils import get_dataloader
+
     transforms = Transforms()
     datasets = LIDCDataset(transforms, Config.LIDC_PATH)
     print(datasets.partition)
     print(datasets.labels)
     img, label = datasets[0]
+    get_dataloader(datasets, Config.BATCHSIZE)
     show(img)
+
