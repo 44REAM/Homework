@@ -227,4 +227,4 @@ if __name__ == "__main__":
     path = "D:\\GoogleDrive\\dataset\\radiology\\TCIA_LIDC-IDRI\\tcia-diagnosis-data-2012-04-20.csv"
 
     save_path = "D:\\GoogleDrive\\dataset\\radiology\\TCIA_LIDC-IDRI\\preprocess\\"
-    extraction(path, show=False, debug=False, save=True, save_path=save_path)
+    extraction(path, show=True, debug=False, save=False, save_path=save_path)
