@@ -56,7 +56,7 @@ class LightningNet(pl.LightningModule):
         output = self.forward(data)
         output = output.reshape(-1)
 
-        acc = binary_accuracy(output, target)
+        acc = binary_accuracy(output, target, pos_weight=0.30769)
 
         return {"val_loss": acc}
 
@@ -74,7 +74,7 @@ class LightningNet(pl.LightningModule):
         output = self.forward(data)
         output = output.reshape(-1)
 
-        acc = binary_accuracy(output, target)
+        acc = binary_accuracy(output, target, pos_weight=0.30769)
 
         return {"test_acc": acc}
 
