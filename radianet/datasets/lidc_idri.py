@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 
 from torch.utils.data import Dataset
-
+from .utils import get_dataloader
 
 
 class LIDCDataset(Dataset):
@@ -26,7 +26,7 @@ class LIDCDataset(Dataset):
     def get_data(self, idx):
 
         path = self.path + str(idx) + '.npy'
-        data = np.load(path) 
+        data = np.load(path)
         return data
 
     def count_labels(self):
@@ -34,11 +34,12 @@ class LIDCDataset(Dataset):
         pos = 0
         for label in self.labels:
             if label == 0:
-                neg +=1
+                neg += 1
             elif label == 1:
                 pos += 1
         print("benign", neg)
-        print("malignant",pos)
+        print("malignant", pos)
+
     def __len__(self):
         return len(self.partition)
 
@@ -46,27 +47,57 @@ class LIDCDataset(Dataset):
         idx = self.partition[index]
 
         X = self.get_data(idx)
-
-        X = self.transforms(X)
-
+        #X = self.transforms(X)
         y = self.labels[index]
 
         return X, y
 
 
+def lidc_dataloader(path, config, validation_split=0.2, transforms=None,
+                 shuffle_dataset=True, random_seed=42):
+
+    dataset = LIDCDataset(transforms, path)
+    dataloader = get_dataloader(dataset, config.BATCHSIZE,
+                                shuffle_dataset=shuffle_dataset, random_seed=random_seed)
+    return dataloader
+
+def count_lidc(dataset):
+    zero = 0
+    one = 0
+    for i in range(len(dataset)):
+        _, y = dataset[i]
+        if y == 0:
+            zero+=1
+        else:
+            one+=1
+    print(zero)
+    print(one)
+
+def count_testloader(testloader):
+    for inputs, targets in testloader:
+
+        print('zero',len(targets[targets==0]))
+        print('zero',len(targets[targets==1]))
+        
 
 
 if __name__ == "__main__":
     from ..config import Config
     from .transformers import Transforms
-    from .utils import show
-
-    from ..utils import get_dataloader
+    from .utils import show, print_dataloader
 
     transforms = Transforms()
-    datasets = LIDCDataset(transforms, Config.LIDC_PATH)
-    datasets.count_labels()
-    img, label = datasets[0]
-    get_dataloader(datasets, Config.BATCHSIZE)
+    dataloader = lidc_dataloader(Config.LIDC_PATH, Config, transforms = transforms)
 
+
+    print('train')
+    print_dataloader(dataloader['train'])
+    print('val')
+    print_dataloader(dataloader['val'])
+    print('test')
+    print_dataloader(dataloader['test'])
+
+    dataset = LIDCDataset(transforms = transforms, path = Config.LIDC_PATH)
+    count_lidc(dataset)
+    count_testloader(dataloader['test'])
 

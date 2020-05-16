@@ -1,6 +1,6 @@
 
 class Config():
-    BATCHSIZE = 2
+    BATCHSIZE = 16
     N_TRIALS = 1
     EPOCHS = 2
     N_CLASSES = 1

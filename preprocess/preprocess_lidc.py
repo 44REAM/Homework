@@ -10,17 +10,6 @@ import pydicom
 import pylidc as pl
 
 
-class LIDCDataset():
-    def __init__(self, n_sample=100, channels=1, width=64, height=64, deep=12):
-        self.data = np.random.randn(
-            n_sample, channels, width, height, deep).astype(np.float32)
-        self.label = np.array([np.random.randint(0, 2)
-                               for x in range(n_sample)]).astype(np.float32)
-
-    def get_data(self, idx):
-        idx = int(idx)
-        return self.data[idx]
-
 
 def get_lidc_label(path, label_type='malignant'):
     # path to csv file
@@ -141,6 +130,7 @@ def get_volume(scan):
 
 
 def visualize(image):
+    print(image.shape)
     plt.hist(image.flatten(), bins=80, color='c')
     plt.xlabel("Hounsfield Units (HU)")
     plt.ylabel("Frequency")
@@ -154,6 +144,7 @@ def preprocess_image(image):
     dim = (224, 224)
     image = cv2.resize(image, dim, interpolation=cv2.INTER_AREA)
     image = cv2.merge((image, image, image))
+    #image = cv2.GaussianBlur(image,(5,5),cv2.BORDER_DEFAULT)
 
     return image
 
@@ -198,7 +189,7 @@ def get_image(nodule, vol):
     print(anns[0].malignancy, anns[0].Malignancy)
 
     _, cbbox, _ = consensus(anns, clevel=0.5,
-                            pad=[(120, 120), (120, 120), (0, 0)])
+                            pad=[(20, 20), (20, 20), (0, 0)])
 
     # Get the central slice of the computed bounding box.
     k = int(0.5*(cbbox[2].stop - cbbox[2].start))
@@ -226,5 +217,5 @@ def get_image(nodule, vol):
 if __name__ == "__main__":
     path = "D:\\GoogleDrive\\dataset\\radiology\\TCIA_LIDC-IDRI\\tcia-diagnosis-data-2012-04-20.csv"
 
-    save_path = "D:\\GoogleDrive\\dataset\\radiology\\TCIA_LIDC-IDRI\\preprocess\\"
-    extraction(path, show=True, debug=False, save=False, save_path=save_path)
+    save_path = "D:\\GoogleDrive\\dataset\\radiology\\TCIA_LIDC-IDRI\\preprocess\\blur\\"
+    extraction(path, show=False, debug=False, save=True, save_path=save_path)

@@ -34,7 +34,7 @@ class Transforms():
     def __call__(self, image):
         for transform in self.transforms:
             image = transform(image=image)['image']
-        return np.transpose(image, (2, 0, 1)).astype(np.float32)
+        return image
 
 
 if __name__ == '__main__':
