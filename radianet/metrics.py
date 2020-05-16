@@ -14,6 +14,12 @@ def binary_accuracy(output, target, theshold =0.5, pos_weight = 1):
     acc = (true_pos+true_neg)/len_all
     return torch.tensor(acc*100)
 
+def binary_confusion_matrix(output, target, theshold = 0.48):
+    output[output > theshold] = 1
+    output[output <= theshold] = 0
+
+    print(confusion_matrix(output.cpu(), target.cpu()))
+
 if __name__ == "__main__":
     output = torch.tensor([1,1,1,1,1,1])
     target = torch.tensor([1,1,1,0,0,0])
