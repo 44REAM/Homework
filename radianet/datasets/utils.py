@@ -49,10 +49,10 @@ def split_dataloader(dataset, batch_size, validation_split=0.2,
                                                     sampler=valid_sampler, shuffle=False)
     
     if test_set == 'same':
-        test_loader = torch.utils.data.DataLoader(dataset, batch_size=len(valid_sampler),
+        test_loader = torch.utils.data.DataLoader(val_dataset, batch_size=len(valid_sampler),
                                                     sampler=valid_sampler, shuffle=False)
     else:
-        test_loader = torch.utils.data.DataLoader(dataset, batch_size=len(valid_sampler),
+        test_loader = torch.utils.data.DataLoader(val_dataset, batch_size=len(valid_sampler),
                                                     sampler=valid_sampler, shuffle=False)
 
     return train_loader, validation_loader, test_loader
